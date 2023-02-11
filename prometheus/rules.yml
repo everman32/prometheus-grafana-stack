@@ -1,0 +1,20 @@
+groups:
+- name: AllInstances
+  rules:
+  - alert: HostHighCpuLoad
+    expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{job="node-exporter", mode="idle"}[1m])) * 100) > 80
+    for: 0m
+    labels:
+      severity: critical
+    annotations:
+      summary: "High CPU usage detected (>80%)"
+      description: "CPU usage value is {{humanize $value}}%"
+
+  - alert: HostOutOfMemory
+    expr: ( node_memory_MemAvailable_bytes{job="second-exporter"} / 1000000 ) < ( 0.5 * node_memory_MemTotal_bytes{job="second-exporter"} / 1000000 )
+    for: 0m
+    labels:
+      severity: warning
+    annotations:
+      summary: Host out of memory (<50% left)
+      description: "Memory usage is {{humanize $value }}MB"
