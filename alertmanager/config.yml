@@ -1,0 +1,17 @@
+global:
+  slack_api_url: 'https://hooks.slack.com/services/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'
+
+route:
+  receiver: 'slack-notifications'
+
+receivers:
+- name: 'slack-notifications'
+  slack_configs:
+  - channel: '#devops'
+    title: '[{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}] {{ .CommonAnnotations.summary }}'
+    text: |-
+      {{ range .Alerts }}
+        *Alert:* {{ .Labels.alertname }} - `{{ .Labels.severity }}`
+        *Instance:* {{ .Labels.instance }}
+        *Description:* {{ .Annotations.description }}
+      {{ end }}
